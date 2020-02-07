@@ -22,11 +22,31 @@ RSpec.describe 'shortened_urls_endpoints' do
     let(:get_request) { get(shortened_url_path(id: shortened_url.id, format: :html)) }
 
     it 'get shortened url in html' do
-      expect(get_request).to redirect_to(shortened_url.short_url)
+      expect(get_request).to redirect_to(shortened_url.actual_url)
     end
   end
 
   describe 'GET /shortened_urls/:id.json' do
+    let(:shortened_url) { create(:shortened_url) }
+
+    it 'get shortened url in json' do
+      get(shortened_url_path(id: shortened_url.id, format: :json))
+      expect(JSON.parse(response.body)['shortened']).to eq(shortened_url.short_url)
+      expect(JSON.parse(response.body)['actual']).to eq(shortened_url.actual_url)
+    end
+  end
+
+  describe 'GET /s/:short_url.html' do
+    let(:shortened_url) { create(:shortened_url) }
+    # let(:get_request) { get(shortened_url_path(id: shortened_url.id, format: :html)) }
+
+    it 'get shortened url in html' do
+      get '/s/:short_url', :params => { :short_url => shortened_url.short_url, :format => :html }
+      expect(response).to redirect_to(shortened_url.actual_url)
+    end
+  end
+
+  describe 'GET /s/:short_url.json' do
     let(:shortened_url) { create(:shortened_url) }
 
     it 'get shortened url in json' do

@@ -28,7 +28,7 @@ class ShortenedUrlsController < ApplicationController
 
     if @shortened_url.present?
       respond_to do |format|
-        format.html { redirect_to @shortened_url.short_url}
+        format.html { redirect_to @shortened_url.actual_url}
         format.json { render :json => {:shortened => @shortened_url.short_url,
                                        :actual => @shortened_url.actual_url }}
       end
