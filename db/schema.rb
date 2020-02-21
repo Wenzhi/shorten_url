@@ -12,12 +12,12 @@
 
 ActiveRecord::Schema.define(version: 2020_01_27_182408) do
 
-  create_table "shortened_urls", force: :cascade do |t|
+  create_table "url_mappings", force: :cascade do |t|
     t.string "actual_url"
-    t.string "short_url"
+    t.string "token"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["short_url"], name: "index_shortened_urls_on_short_url", unique: true
+    t.index ["token"], name: "index_url_mappings_on_token", unique: true
   end
 
 end
