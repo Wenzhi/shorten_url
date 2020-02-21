@@ -16,11 +16,10 @@ class UrlMappingsController < ApplicationController
     end
 
     render :json => {:token => mapping.token,
-                     :actual_url => mapping.actual_url }
+                     :actual_url => mapping.actual_url,
+                     :shortened_url => request.host_with_port+url_mapping_path(mapping.token)}
 
   end
-
-
 
   def show
     @url_mapping = UrlMapping.find_by_token(params[:token])
@@ -29,7 +28,8 @@ class UrlMappingsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to @url_mapping.actual_url}
         format.json { render :json => {:token => @url_mapping.token,
-                                       :actual_url => @url_mapping.actual_url }}
+                                       :actual_url => @url_mapping.actual_url,
+                                       :shortened_url => request.host_with_port+url_mapping_path(@url_mapping.token)}}
       end
     else
       render :json => {:error_message => "Cannot find the corresponding actual url."}
