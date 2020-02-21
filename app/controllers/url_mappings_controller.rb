@@ -10,7 +10,7 @@ class UrlMappingsController < ApplicationController
         mapping = generate_new_mapping!(actual_url)
       rescue => e
         render :json => {:error_message => e.message,
-                         :error_class => e.class.name }
+                         :error_class => e.class.name}
       return
       end
     end
@@ -38,10 +38,23 @@ class UrlMappingsController < ApplicationController
     return
   end
 
-    def generate_new_mapping!(actual_url)
-      mapping = UrlMapping.new(actual_url: actual_url)
-      mapping.generate_token
-      mapping.save!
-      return mapping
+  def destroy
+    token = params[:token]
+    return_json = {}
+    if token.present?
+      return_json[:token] = token
+      return_json[:deleted] = true
+      UrlMapping.delete_by(token: token)
+    else
+      return_json[:error_message] = "Please pass in either the actual url or the token."
     end
+    render :json => return_json
+  end
+
+  def generate_new_mapping!(actual_url)
+    mapping = UrlMapping.new(actual_url: actual_url)
+    mapping.generate_token
+    mapping.save!
+    return mapping
+  end
 end

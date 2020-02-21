@@ -54,4 +54,23 @@ RSpec.describe 'url_mappings' do
       expect(JSON.parse(response.body)['error_message']).to eq("Cannot find the corresponding actual url.")
     end
   end
+
+  describe 'DELETE /url_mappings.json' do
+    let(:url_mapping) { create(:url_mapping) }
+
+    it 'delete exist shortened url' do
+      delete(url_mapping_path(token: url_mapping.token, format: :json))
+      expect(JSON.parse(response.body)['deleted']).to eq(true)
+      expect(JSON.parse(response.body)['token']).to eq(url_mapping.token)
+
+      get(url_mapping_path(token: url_mapping.token, format: :json))
+      expect(JSON.parse(response.body)['error_message']).to eq("Cannot find the corresponding actual url.")
+    end
+
+    it 'delete a non-exist shortened url' do
+      delete(url_mapping_path(token: 'non exist token', format: :json))
+      expect(JSON.parse(response.body)['deleted']).to eq(true)
+      expect(JSON.parse(response.body)['token']).to eq('non exist token')
+    end
+  end
 end
