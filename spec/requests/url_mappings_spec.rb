@@ -55,7 +55,7 @@ RSpec.describe 'url_mappings' do
     end
   end
 
-  describe 'DELETE /url_mappings.json' do
+  describe 'DELETE /url_mappings/:token.json' do
     let(:url_mapping) { create(:url_mapping) }
 
     it 'delete exist shortened url' do

@@ -40,15 +40,12 @@ class UrlMappingsController < ApplicationController
 
   def destroy
     token = params[:token]
-    return_json = {}
     if token.present?
-      return_json[:token] = token
-      return_json[:deleted] = true
       UrlMapping.delete_by(token: token)
+      render :json => {:token => token, :deleted => true}
     else
-      return_json[:error_message] = "Please pass in either the actual url or the token."
+      render :json => {:error_message => "Please pass in either the actual url or the token."}
     end
-    render :json => return_json
   end
 
   def generate_new_mapping!(actual_url)
