@@ -4,21 +4,15 @@ class UrlMappingsController < ApplicationController
 
   def create
     actual_url = params[:actual_url]
-    mapping = UrlMapping.find_by_actual_url(actual_url)
-    if !mapping.present?
-      begin
-        mapping = generate_new_mapping!(actual_url)
-      rescue => e
-        render :json => {:error_message => e.message,
-                         :error_class => e.class.name}
-      return
-      end
+    mapping = UrlMapping.find_or_initialize_by(actual_url: actual_url)
+
+    if mapping.save
+      render :json => {:token => mapping.token,
+                       :actual_url => mapping.actual_url,
+                       :shortened_url => request.host_with_port+url_mapping_path(mapping.token)}
+    else
+      render :json => {:errors => mapping.errors.full_messages.join(",")}
     end
-
-    render :json => {:token => mapping.token,
-                     :actual_url => mapping.actual_url,
-                     :shortened_url => request.host_with_port+url_mapping_path(mapping.token)}
-
   end
 
   def show
@@ -34,7 +28,7 @@ class UrlMappingsController < ApplicationController
     else
       render :json => {:error_message => "Cannot find the corresponding actual url."}
     end
-
+    # Here is for the html. Without it, it will try to render a HTML view
     return
   end
 
@@ -46,12 +40,5 @@ class UrlMappingsController < ApplicationController
     else
       render :json => {:error_message => "Please pass in either the actual url or the token."}
     end
-  end
-
-  def generate_new_mapping!(actual_url)
-    mapping = UrlMapping.new(actual_url: actual_url)
-    mapping.generate_token
-    mapping.save!
-    return mapping
   end
 end

@@ -16,6 +16,9 @@ RSpec.describe 'url_mappings' do
       expect(token).not_to be_nil
       expect(token).not_to eq(url_mapping.token)
       expect(JSON.parse(response.body)['shortened_url']).to eq(request.host_with_port+url_mapping_path(token))
+
+      get(url_mapping_path(token: token, format: :json))
+      expect(JSON.parse(response.body)['token']).to eq(token)
     end
   end
 
